@@ -1,0 +1,71 @@
+{
+  "name": "react-dia",
+  "version": "0.0.1",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/dia.umd.cjs",
+  "module": "./dist/dia.js",
+  "browser": "./dist/dia.cjs.js",
+  "types": "./dist/dia.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/dia.js",
+      "require": "./dist/dia.cjs.js",
+      "umd": "./dist/dia.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.44.2",
+    "@types/node": "^20.5.1",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "autoprefixer": "^10.4.20",
+    "clsx": "^2.0.0",
+    "delay": "^6.0.0",
+    "eslint": "^8.45.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.3",
+    "lucide-react": "^0.277.0",
+    "postcss": "^8.4.49",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^1.14.0",
+    "tailwindcss": "^3.4.15",
+    "ts-pattern": "^5.5.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.5.2",
+    "vite-plugin-resolve": "^2.4.1",
+    "wouter": "^2.11.0"
+  },
+  "peerDependencies": {
+    "@types/react": ">=16.8",
+    "react": ">=16.8"
+  },
+  "dependencies": {
+    "@mobily/ts-belt": "^3.13.1",
+    "@radix-ui/react-slot": "^1.1.0",
+    "deepmerge-ts": "^5.1.0",
+    "embla-carousel-react": "^8.4.0",
+    "focus-trap-react": "^10.3.1",
+    "react-detect-click-outside": "^1.1.7",
+    "react-hotkeys-hook": "^4.6.1",
+    "react-merge-refs": "^2.1.1",
+    "react-remove-scroll": "^2.6.0",
+    "react-use-measure": "^2.1.1",
+    "react-zoom-pan-pinch": "^3.6.1",
+    "screenfull": "^6.0.2",
+    "usehooks-ts": "^3.1.0"
+  }
+}
