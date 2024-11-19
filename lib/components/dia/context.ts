@@ -15,6 +15,9 @@ export const SliderContext = React.createContext<null | {
   fullscreen: boolean
   setFullscreen: (value: boolean) => void
   setSlideFromIndex: (index: number | ((value: number) => number)) => void
+  transformThreshold: number
+  disableTransforms: boolean
+  setDisableTransforms: (disable: boolean) => void
 }>(null)
 
 export const SlideContext = React.createContext<null | SlideContext>(null)

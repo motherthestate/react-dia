@@ -1,59 +1,17 @@
 import useEmblaCarousel from 'embla-carousel-react'
 import React from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import useMeasure from 'react-use-measure'
-import {
-  TransformComponent,
-  TransformWrapper,
-  useControls,
-  useTransformEffect,
-} from 'react-zoom-pan-pinch'
 import { match } from 'ts-pattern'
-import { Light, WithData, useSlide, useSlider } from '../lib/main'
+import { SlideTransform } from '../lib/components/transform'
+import { Dia, WithData, useSlider } from '../lib/main'
+import { CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { takeOnly } from '../lib/functions/array'
 
 const ImageSlide: React.FC<{ data: ImageData }> = props => {
-  const [ref, bounds] = useMeasure()
-
   return (
-    <div
-      className='size-full overflow-hidden flex'
-      ref={ref}
-      style={
-        {
-          '--bounds-height': `${bounds.height}px`,
-          '--bounds-width': `${bounds.width}px`,
-        } as React.CSSProperties
-      }
-    >
-      {bounds.height > 0 && (
-        <TransformWrapper
-          centerOnInit
-          key={`${bounds.width}x${bounds.height}`}
-          wheel={{ step: 1 }}
-          pinch={{ step: 1 }}
-        >
-          <TransformControls />
-          <TransformComponent wrapperClass='size-full overflow-hidden flex'>
-            <img
-              src={props.data.src}
-              className='max-w-full max-h-[var(--bounds-height)] w-auto h-auto'
-            />
-          </TransformComponent>
-        </TransformWrapper>
-      )}
-    </div>
+    <SlideTransform>
+      <img src={props.data.src} className='max-w-full max-h-full w-auto h-auto' />
+    </SlideTransform>
   )
-}
-
-const TransformControls: React.FC<unknown> = props => {
-  const context = useControls()
-  const slide = useSlide<ImageData>()
-
-  React.useEffect(() => {
-    if (!slide.active) context.resetTransform(0)
-  }, [slide.active])
-
-  return <div></div>
 }
 
 const VideoSlide: React.FC<{ data: VideoData }> = props => {
@@ -73,15 +31,15 @@ const Page: React.FC<unknown> = () => {
       <div className='flex gap-3'>
         {dataEntries.map(data => {
           return (
-            <LightCustom.Trigger key={data.id} asChild data={data}>
+            <DiaCustom.Trigger key={data.id} asChild data={data}>
               <button className='focus:bg-red-500'>{data.id}</button>
-            </LightCustom.Trigger>
+            </DiaCustom.Trigger>
           )
         })}
       </div>
 
       <div className='flex flex-col'>
-        {Array.from({ length: 1000 }).map((_, i) => (
+        {Array.from({ length: 100 }).map((_, i) => (
           <p key={i}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum eu erat non massa
             congue congue. Morbi at mauris sapien. Etiam lacinia quam ipsum, quis consequat metus
@@ -99,49 +57,57 @@ const Page: React.FC<unknown> = () => {
 
 const Slider: React.FC<unknown> = props => {
   const slider = useSlider()
-
-  const [emblaRef, api] = useEmblaCarousel({ watchDrag: false, duration: 20 })
+  const [emblaRef, api] = useEmblaCarousel({ watchDrag: slider.disableTransforms, duration: 20 })
 
   React.useLayoutEffect(() => {
     if (!api) return
     api.scrollTo(slider.slideIndex, !slider.animate)
   }, [slider.slideIndex, slider.animate, api])
 
+  React.useEffect(() => {
+    if (!api) return
+    const handle = (e: typeof api) => {
+      const inView = e.slidesInView()
+      const onlyIndex = inView.length === 1 ? inView[0] : undefined
+      if (typeof onlyIndex === 'number') slider.setSlideFromIndex(onlyIndex)
+    }
+    api.on('slidesInView', handle)
+    return () => void api.off('slidesInView', handle)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api])
+
   return (
-    <LightCustom.Portal>
-      <LightCustom.Overlay className='fixed inset-0 size-full bg-black/10' />
+    <DiaCustom.Portal>
+      <DiaCustom.Overlay className='fixed inset-0 size-full bg-black/30' />
 
-      <LightCustom.Content className='fixed rounded-t-2xl overflow-hidden inset-0 top-12 overscroll-none flex flex-col w-full bg-black text-white select-none'>
-        <div className='flex absolute top-0 left-0 right-0 z-20 bg-black/50'>
-          <LightCustom.Close asChild>
+      <DiaCustom.Content className='fixed rounded-t-2xl overflow-hidden inset-0 top-12 overscroll-none flex flex-col w-full bg-black text-white select-none'>
+        <div className='flex absolute top-0 left-0 right-0 z-20 bg-black/50 px-6 py-4 gap-4 justify-end'>
+          <DiaCustom.Close asChild>
             <button>Close</button>
-          </LightCustom.Close>
+          </DiaCustom.Close>
 
-          <div className='flex'>
-            <LightCustom.Previous asChild>
-              <button>Prev</button>
-            </LightCustom.Previous>
-
-            <LightCustom.Next asChild>
-              <button>Next</button>
-            </LightCustom.Next>
-
-            <button onClick={() => slider.setFullscreen(true)}>Fullscreen</button>
-          </div>
+          <button onClick={() => slider.setFullscreen(!slider.fullscreen)}>
+            {slider.fullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+          </button>
         </div>
 
-        {/* <LightCustom.ActiveSlide>
-          {data => {
-            return match(data)
-              .with({ type: 'image' }, data => 'Image')
-              .with({ type: 'video' }, data => 'Video')
-              .otherwise(() => null)
-          }}
-        </LightCustom.ActiveSlide> */}
+        <DiaCustom.Previous asChild>
+          <button className='size-10 absolute left-3 top-[50%] translate-y-[-50%] z-20 flex justify-center items-center disabled:opacity-25'>
+            <CaretLeft className='size-5' />
+          </button>
+        </DiaCustom.Previous>
+
+        <DiaCustom.Next asChild>
+          <button className='size-10 absolute right-3 top-[50%] translate-y-[-50%] z-20 flex justify-center items-center disabled:opacity-25'>
+            <CaretRight className='size-5' />
+          </button>
+        </DiaCustom.Next>
 
         <div className='embla size-full' ref={emblaRef}>
           <div className='embla__container size-full'>
-            <LightCustom.Slides>
+            {/* {slider.slides.map(() => {})} */}
+
+            <DiaCustom.Slides>
               {data => {
                 return (
                   <div className='embla__slide' key={data.id}>
@@ -152,35 +118,25 @@ const Slider: React.FC<unknown> = props => {
                   </div>
                 )
               }}
-            </LightCustom.Slides>
+            </DiaCustom.Slides>
           </div>
         </div>
-
-        {/* <div className='flex items-center justify-center gap-4 absolute bottom-12 left-0 right-0'>
-          {slider.slides.slice().map(slide => {
-            return (
-              <LightCustom.Trigger key={slide.id} id={slide.id} asChild>
-                <button>{slide.id}</button>
-              </LightCustom.Trigger>
-            )
-          })}
-        </div> */}
-      </LightCustom.Content>
-    </LightCustom.Portal>
+      </DiaCustom.Content>
+    </DiaCustom.Portal>
   )
 }
 
 export const App = () => {
   return (
-    <LightCustom.Root>
-      <LightCustom.Root>
+    <DiaCustom.Root>
+      <DiaCustom.Root>
         <div className='p-4'>
           <Page />
         </div>
 
         <Slider />
-      </LightCustom.Root>
-    </LightCustom.Root>
+      </DiaCustom.Root>
+    </DiaCustom.Root>
   )
 }
 
@@ -204,4 +160,4 @@ type VideoData = {
 
 type Data = ImageData | VideoData
 
-const LightCustom = Light as WithData<Data>
+const DiaCustom = Dia as WithData<Data>

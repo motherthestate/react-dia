@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@mobily/ts-belt": "^3.13.1",
+    "@phosphor-icons/react": "^2.1.7",
     "@radix-ui/react-slot": "^1.1.0",
     "deepmerge-ts": "^5.1.0",
     "embla-carousel-react": "^8.4.0",

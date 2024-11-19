@@ -3,9 +3,9 @@ import { MinViableSlideData } from '../../types'
 import { SlideContext, SliderContext } from './context'
 import { of } from '../../functions/array'
 
-export const useLightSliderContext = (symbol: string = 'Unknown') => {
+export const useSliderContext = (symbol: string = 'Unknown') => {
   const context = React.useContext(SliderContext)
-  if (!context) throw new Error(`LightSlider: ${symbol} used outside .Root`)
+  if (!context) throw new Error(`react-dia: ${symbol} used outside .Root`)
   return context
 }
 
@@ -13,7 +13,7 @@ export const useRegisterSlide = (
   slide: MinViableSlideData | MinViableSlideData[] | null,
   config: Partial<{ symbol: string }> = {}
 ) => {
-  const context = useLightSliderContext(config.symbol)
+  const context = useSliderContext(config.symbol)
 
   React.useEffect(() => {
     if (!slide) return

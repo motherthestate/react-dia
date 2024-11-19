@@ -8,19 +8,24 @@ import { useOnClickOutside } from 'usehooks-ts'
 import { MinViableSlideData } from '../../types'
 import { Portal } from '../portal'
 import { SlideContext, SliderContext } from './context'
-import { useLightSliderContext, useRegisterSlide } from './hooks'
+import { useSliderContext, useRegisterSlide } from './hooks'
 
 /**
  * Root
  */
 
-export const LightRoot: React.FC<{
+type DiaRootProps = {
   children: React.ReactNode
-}> = props => {
+  transformThreshold?: number
+}
+
+export const DiaRoot: React.FC<DiaRootProps> = props => {
+  const { transformThreshold = 0.5, ...elProps } = props
   const [slides, setSlides] = React.useState(Array<MinViableSlideData>())
   const [activeSlideId, setActiveSlideId] = React.useState<null | string>(null)
   const [open, setOpen] = React.useState(false)
   const [fullscreen, setFullscreen] = React.useState(false)
+  const [disableTransforms, setDisableTransforms] = React.useState(true)
 
   const animate = React.useDeferredValue(open)
 
@@ -85,6 +90,9 @@ export const LightRoot: React.FC<{
         fullscreen,
         setFullscreen,
         setSlideFromIndex,
+        transformThreshold,
+        disableTransforms,
+        setDisableTransforms,
       }}
     >
       {props.children}
@@ -96,8 +104,8 @@ export const LightRoot: React.FC<{
  * Open
  */
 
-export const LightOpen: React.FC<{ children: React.ReactNode }> = props => {
-  const context = useLightSliderContext('Slider')
+export const DiaOpen: React.FC<{ children: React.ReactNode }> = props => {
+  const context = useSliderContext('Slider')
   if (!context.open) return null
   return props.children
 }
@@ -108,7 +116,7 @@ export const LightOpen: React.FC<{ children: React.ReactNode }> = props => {
 
 type SliderProps<D> = React.ComponentProps<'div'>
 
-export const LightPortal = <D,>() =>
+export const DiaPortal = <D,>() =>
   React.forwardRef<HTMLDivElement, SliderProps<D>>((props, ref) => {
     const { ...elProps } = props
     return <Portal {...elProps} ref={ref}></Portal>
@@ -118,17 +126,17 @@ export const LightPortal = <D,>() =>
  * Overlay
  */
 
-type LightOverlayProps = React.ComponentProps<'div'>
+type DiaOverlayProps = React.ComponentProps<'div'>
 
-export const LightOverlayOpen: React.FC<LightOverlayProps> = props => {
+export const DiaOverlayOpen: React.FC<DiaOverlayProps> = props => {
   return (
-    <LightOpen>
-      <LightOverlay {...props} />
-    </LightOpen>
+    <DiaOpen>
+      <DiaOverlay {...props} />
+    </DiaOpen>
   )
 }
 
-export const LightOverlay: React.FC<LightOverlayProps> = props => {
+export const DiaOverlay: React.FC<DiaOverlayProps> = props => {
   return <div aria-hidden {...props} />
 }
 
@@ -136,23 +144,23 @@ export const LightOverlay: React.FC<LightOverlayProps> = props => {
  * Content
  */
 
-type LightContentProps = React.ComponentProps<'div'> & {
+type DiaContentProps = React.ComponentProps<'div'> & {
   trapFocus?: boolean
   scrollLock?: boolean
 }
 
-export const LightContentOpen: React.FC<LightContentProps> = props => {
+export const DiaContentOpen: React.FC<DiaContentProps> = props => {
   return (
-    <LightOpen>
-      <LightContent {...props} />
-    </LightOpen>
+    <DiaOpen>
+      <DiaContent {...props} />
+    </DiaOpen>
   )
 }
 
-export const LightContent: React.FC<LightContentProps> = props => {
+export const DiaContent: React.FC<DiaContentProps> = props => {
   const { trapFocus = true, scrollLock = true, ...elProps } = props
 
-  const context = useLightSliderContext('Slider Content')
+  const context = useSliderContext('Slider Content')
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   /**
@@ -187,7 +195,7 @@ export const LightContent: React.FC<LightContentProps> = props => {
   return (
     <FocusTrap active={trapFocus} containerElements={[containerRef.current!]}>
       <RemoveScroll enabled={scrollLock} as={Slot} allowPinchZoom shards={[containerRef.current!]}>
-        <div {...elProps} ref={containerRef}></div>
+        <div {...elProps} data-dia ref={containerRef}></div>
       </RemoveScroll>
     </FocusTrap>
   )
@@ -201,10 +209,10 @@ type SliderSlidesProps<D> = {
   children: (slideData: D) => React.ReactNode
 }
 
-export const LightSlideSlides = <D extends { type: string }>(props: SliderSlidesProps<D>) => {
+export const DiaSlideSlides = <D extends { type: string }>(props: SliderSlidesProps<D>) => {
   const { children: slideFromData } = props
 
-  const context = useLightSliderContext('Slides')
+  const context = useSliderContext('Slides')
 
   return (
     <>
@@ -233,10 +241,10 @@ type SliderActiveProps<D> = {
   children: (slideData: D) => React.ReactNode
 }
 
-export const LightSlideActive = <D extends { type: string }>(props: SliderActiveProps<D>) => {
+export const DiaSlideActive = <D extends { type: string }>(props: SliderActiveProps<D>) => {
   const { children: slideFromData } = props
 
-  const context = useLightSliderContext('Content')
+  const context = useSliderContext('Content')
   if (!context.activeSlide) return null
 
   return <>{slideFromData(context.activeSlide as any)}</>
@@ -246,7 +254,7 @@ export const LightSlideActive = <D extends { type: string }>(props: SliderActive
  * Slide
  */
 
-export const LightSlide = <D extends MinViableSlideData>(props: { data: D }) => {
+export const DiaSlide = <D extends MinViableSlideData>(props: { data: D }) => {
   useRegisterSlide(props.data)
   return null
 }
@@ -259,10 +267,10 @@ type CloseProps = React.ComponentProps<'button'> & {
   asChild?: boolean
 }
 
-export const LightClose = React.forwardRef<HTMLButtonElement, CloseProps>((props, ref) => {
+export const DiaClose = React.forwardRef<HTMLButtonElement, CloseProps>((props, ref) => {
   const { asChild, ...elProps } = props
 
-  const context = useLightSliderContext('Close')
+  const context = useSliderContext('Close')
 
   const Container = asChild ? Slot : 'button'
 
@@ -288,7 +296,7 @@ type TriggerProps<D> =
       asChild?: boolean
     })
 
-export const LightTrigger = <D extends MinViableSlideData>() =>
+export const DiaTrigger = <D extends MinViableSlideData>() =>
   React.forwardRef<HTMLButtonElement, TriggerProps<D>>((props, ref) => {
     const { asChild, ...elProps } = props
 
@@ -297,7 +305,7 @@ export const LightTrigger = <D extends MinViableSlideData>() =>
     if (!dataId) throw new Error('Trigger: no data.id or props.id provided')
 
     useRegisterSlide(props.data ?? null, { symbol: 'Trigger' })
-    const context = useLightSliderContext('Trigger')
+    const context = useSliderContext('Trigger')
 
     const Container = asChild ? Slot : 'button'
 
@@ -319,26 +327,36 @@ export const LightTrigger = <D extends MinViableSlideData>() =>
  * Buttons
  */
 
-type LightButtonProps =
+type DiaButtonProps =
   | (React.ComponentProps<'button'> & { asChild?: false })
   | { asChild: true; children: React.ReactElement }
 
-export const LightPrevious = React.forwardRef<HTMLButtonElement, LightButtonProps>((props, ref) => {
+export const DiaPrevious = React.forwardRef<HTMLButtonElement, DiaButtonProps>((props, ref) => {
   const { asChild, ...elProps } = props
   const Button = asChild ? Slot : 'button'
-  const context = useLightSliderContext('Previous')
+  const context = useSliderContext('Previous')
 
   return (
-    <Button onClick={() => context.setSlideFromIndex(index => index - 1)} {...elProps} ref={ref} />
+    <Button
+      onClick={() => context.setSlideFromIndex(index => index - 1)}
+      disabled={context.slideIndex === 0}
+      {...elProps}
+      ref={ref}
+    />
   )
 })
 
-export const LightNext = React.forwardRef<HTMLButtonElement, LightButtonProps>((props, ref) => {
+export const DiaNext = React.forwardRef<HTMLButtonElement, DiaButtonProps>((props, ref) => {
   const { asChild, ...elProps } = props
   const Button = asChild ? Slot : 'button'
-  const context = useLightSliderContext('Next')
+  const context = useSliderContext('Next')
 
   return (
-    <Button onClick={() => context.setSlideFromIndex(index => index + 1)} {...elProps} ref={ref} />
+    <Button
+      onClick={() => context.setSlideFromIndex(index => index + 1)}
+      disabled={context.slideIndex >= context.slides.length - 1}
+      {...elProps}
+      ref={ref}
+    />
   )
 })

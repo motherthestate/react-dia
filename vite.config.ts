@@ -32,6 +32,9 @@ export default defineConfig(({ mode, command }) => {
           'focus-trap-react',
           'usehooks-ts',
           'react-merge-refs',
+          'embla-carousel-react',
+          'react-zoom-pan-pinch',
+          'react-use-measure',
         ],
         output: {
           globals: {

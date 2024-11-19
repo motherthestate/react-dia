@@ -1,5 +1,3 @@
-export { Light, type WithData } from './components/light'
-export {
-  useLightSliderContext as useSlider,
-  useSlideContext as useSlide,
-} from './components/light/hooks'
+export { Dia, type WithData } from './components/dia'
+
+export { useSliderContext as useSlider, useSlideContext as useSlide } from './components/dia/hooks'
