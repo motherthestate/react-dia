@@ -66,7 +66,7 @@ const Dia = ReactDia as WithData<
 
 ## Reference
 
-### **Trigger**
+### Trigger
 
 The button that opens the dialog.
 
@@ -75,7 +75,7 @@ The button that opens the dialog.
 | `data`    | `object`  | `undefined` | Optional slide data.                                               |
 | `asChild` | `boolean` | `false`     | Change the default rendered element for the one passed as a child. |
 
-### **Slide**
+### Slide
 
 Registers a slide using data.
 
@@ -83,7 +83,7 @@ Registers a slide using data.
 | -------- | -------- | ----------- | --------------- |
 | `data`   | `object` | `undefined` | Slide data.     |
 
-### **Content**
+### Content
 
 Contains the main content to be rendered.
 
@@ -92,7 +92,7 @@ Contains the main content to be rendered.
 | `trapFocus`  | `boolean` | `undefined` | Whether the component should trap focus or not.   |
 | `scrollLock` | `boolean` | `undefined` | Whether the component should scroll lock outside. |
 
-### **Close / Previous / Next**
+### Close / Previous / Next
 
 Action buttons.
 
@@ -100,7 +100,7 @@ Action buttons.
 | --------- | --------- | ----------- | ------------------------------------------------------------------ |
 | `asChild` | `boolean` | `false`     | Change the default rendered element for the one passed as a child. |
 
-### **ActiveSlide**
+### ActiveSlide
 
 Component with a child callback being passed slide data.
 
@@ -108,7 +108,7 @@ Component with a child callback being passed slide data.
 | ---------- | ------------------------------------- | ----------- | -------------------------------------------- |
 | `children` | `(data: SlideData) ⇒ React.ReactNode` | `undefined` | A callback to render slide data as children. |
 
-### **Slides**
+### Slides
 
 Component with a child callback mapping all slides.
 
@@ -116,7 +116,7 @@ Component with a child callback mapping all slides.
 | ---------- | ------------------------------------- | ----------- | -------------------------------------------- |
 | `children` | `(data: SlideData) ⇒ React.ReactNode` | `undefined` | A callback to render all slides as children. |
 
-### **ContentPortal**
+### ContentPortal
 
 Portal rendering children directly in Dia content.
 
