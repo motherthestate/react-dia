@@ -26,3 +26,7 @@ export type SlideContext<D extends MinViableSlideData = MinViableSlideData> = {
   data: D
   active: boolean
 }
+
+export const SliderContentContext = React.createContext<null | {
+  container: React.RefObject<HTMLDivElement>
+}>(null)

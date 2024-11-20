@@ -1,11 +1,17 @@
 import React from 'react'
 import { MinViableSlideData } from '../../types'
-import { SlideContext, SliderContext } from './context'
+import { SlideContext, SliderContentContext, SliderContext } from './context'
 import { of } from '../../functions/array'
 
 export const useSliderContext = (symbol: string = 'Unknown') => {
   const context = React.useContext(SliderContext)
   if (!context) throw new Error(`react-dia: ${symbol} used outside .Root`)
+  return context
+}
+
+export const useSliderContentContext = () => {
+  const context = React.useContext(SliderContentContext)
+  if (!context) throw new Error(`react-dia: ContentContext used outside .Content`)
   return context
 }
 

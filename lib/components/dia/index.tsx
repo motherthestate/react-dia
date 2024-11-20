@@ -2,6 +2,7 @@ import { MinViableSlideData } from '../../types'
 import {
   DiaClose,
   DiaContentOpen,
+  DiaContentPortal,
   DiaNext,
   DiaOverlayOpen,
   DiaPortal,
@@ -20,11 +21,12 @@ export const Dia = {
   Slides: DiaSlideSlides,
   Close: DiaClose,
   Trigger: DiaTrigger(),
-  ActiveSlide: DiaSlideActive,
+  ActiveSlide: DiaSlideActive(),
   Overlay: DiaOverlayOpen,
   Content: DiaContentOpen,
   Next: DiaNext,
   Previous: DiaPrevious,
+  ContentPortal: DiaContentPortal,
 }
 
 export type WithData<D extends MinViableSlideData> = {
@@ -34,9 +36,10 @@ export type WithData<D extends MinViableSlideData> = {
   Slides: typeof DiaSlideSlides<D>
   Close: typeof DiaClose
   Trigger: ReturnType<typeof DiaTrigger<D>>
-  ActiveSlide: typeof DiaSlideActive
+  ActiveSlide: ReturnType<typeof DiaSlideActive<D>>
   Overlay: typeof DiaOverlayOpen
   Content: typeof DiaContentOpen
   Next: typeof DiaNext
   Previous: typeof DiaPrevious
+  ContentPortal: typeof DiaContentPortal
 }

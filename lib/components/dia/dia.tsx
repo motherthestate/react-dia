@@ -7,8 +7,8 @@ import screenfull from 'screenfull'
 import { useOnClickOutside } from 'usehooks-ts'
 import { MinViableSlideData } from '../../types'
 import { Portal } from '../portal'
-import { SlideContext, SliderContext } from './context'
-import { useSliderContext, useRegisterSlide } from './hooks'
+import { SlideContext, SliderContentContext, SliderContext } from './context'
+import { useSliderContext, useRegisterSlide, useSliderContentContext } from './hooks'
 
 /**
  * Root
@@ -20,7 +20,8 @@ type DiaRootProps = {
 }
 
 export const DiaRoot: React.FC<DiaRootProps> = props => {
-  const { transformThreshold = 0.5, ...elProps } = props
+  const { transformThreshold = 0.1, ...elProps } = props
+
   const [slides, setSlides] = React.useState(Array<MinViableSlideData>())
   const [activeSlideId, setActiveSlideId] = React.useState<null | string>(null)
   const [open, setOpen] = React.useState(false)
@@ -174,7 +175,7 @@ export const DiaContent: React.FC<DiaContentProps> = props => {
     keydown: false,
   })
 
-  useOnClickOutside(containerRef, () => {
+  useOnClickOutside([containerRef], e => {
     context.setOpen(false)
   })
 
@@ -193,11 +194,18 @@ export const DiaContent: React.FC<DiaContentProps> = props => {
   }, [context.fullscreen])
 
   return (
-    <FocusTrap active={trapFocus} containerElements={[containerRef.current!]}>
-      <RemoveScroll enabled={scrollLock} as={Slot} allowPinchZoom shards={[containerRef.current!]}>
-        <div {...elProps} data-dia ref={containerRef}></div>
-      </RemoveScroll>
-    </FocusTrap>
+    <SliderContentContext.Provider value={{ container: containerRef }}>
+      <FocusTrap active={trapFocus} containerElements={[containerRef.current!]}>
+        <RemoveScroll
+          enabled={scrollLock}
+          as={Slot}
+          allowPinchZoom
+          shards={[containerRef.current!]}
+        >
+          <div {...elProps} data-dia ref={containerRef}></div>
+        </RemoveScroll>
+      </FocusTrap>
+    </SliderContentContext.Provider>
   )
 }
 
@@ -238,16 +246,30 @@ export const DiaSlideSlides = <D extends { type: string }>(props: SliderSlidesPr
  */
 
 type SliderActiveProps<D> = {
-  children: (slideData: D) => React.ReactNode
+  children?: ((slideData: D) => React.ReactNode) | React.ReactNode
 }
 
-export const DiaSlideActive = <D extends { type: string }>(props: SliderActiveProps<D>) => {
-  const { children: slideFromData } = props
+export const DiaSlideActive = <D extends MinViableSlideData>() => {
+  return (props: SliderActiveProps<D>) => {
+    const { children: slideFromData } = props
 
-  const context = useSliderContext('Content')
-  if (!context.activeSlide) return null
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const context = useSliderContext('Content')
+    if (!context.activeSlide) return null
 
-  return <>{slideFromData(context.activeSlide as any)}</>
+    return (
+      <SlideContext.Provider
+        value={{
+          data: context.activeSlide,
+          active: context.activeSlideId === context.activeSlide.id,
+        }}
+      >
+        {typeof slideFromData === 'function'
+          ? slideFromData(context.activeSlide as any)
+          : slideFromData ?? null}
+      </SlideContext.Provider>
+    )
+  }
 }
 
 /**
@@ -360,3 +382,12 @@ export const DiaNext = React.forwardRef<HTMLButtonElement, DiaButtonProps>((prop
     />
   )
 })
+
+/**
+ * ContentPortal
+ */
+
+export const DiaContentPortal: React.FC<{ children: React.ReactNode }> = props => {
+  const content = useSliderContentContext()
+  return <Portal container={content.container.current}>{props.children}</Portal>
+}
