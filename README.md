@@ -89,8 +89,8 @@ Contains the main content to be rendered.
 
 | **Prop**     | **Type**  | **Default** | **Description**                                   |
 | ------------ | --------- | ----------- | ------------------------------------------------- |
-| `trapFocus`  | `boolean` | `undefined` | Whether the component should trap focus or not.   |
-| `scrollLock` | `boolean` | `undefined` | Whether the component should scroll lock outside. |
+| `trapFocus`  | `boolean` | `true`      | Whether the component should trap focus or not.   |
+| `scrollLock` | `boolean` | `true`      | Whether the component should scroll lock outside. |
 
 ### Close / Previous / Next
 
