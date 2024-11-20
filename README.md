@@ -2,7 +2,21 @@
 
 A headless content slider.
 
----
+- [react-dia 📽️](#react-dia-)
+  - [Anatomy](#anatomy)
+  - [Typed data](#typed-data)
+  - [Reference](#reference)
+    - [**Trigger**](#trigger)
+    - [**Slide**](#slide)
+    - [**Content**](#content)
+    - [**Close / Previous / Next**](#close-previous-next)
+    - [**ActiveSlide**](#activeslide)
+    - [**Slides**](#slides)
+    - [**ContentPortal**](#contentportal)
+  - [Family components](#family-components)
+    - [Carousel](#carousel)
+    - [Transform](#transform)
+    - [Share](#share)
 
 ## Anatomy
 
