@@ -7,3 +7,4 @@ export {
   useTransformContext as useTransform,
 } from './components/transform'
 export { Share } from './components/share'
+export { type MinViableSlideData } from './types'

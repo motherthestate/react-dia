@@ -183,7 +183,7 @@ const Example: React.FC<unknown> = props => {
           )}
         </Dia.ActiveSlide>
 
-        <DiaCarousel.Root className='size-full'>
+        <DiaCarousel.Root lazy={false} className='size-full'>
           <DiaCarousel.Slides>
             <Dia.Slides>
               {data => {

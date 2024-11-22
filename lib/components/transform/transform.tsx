@@ -82,7 +82,6 @@ export const TransformRoot: React.FC<TransformRootProps> = props => {
             pinch={{ step: 1 }}
             panning={{ disabled: slider.disableTransforms }}
             onZoomStop={e => {
-              console.log(e.state.scale)
               setScale(e.state.scale)
             }}
             onZoom={e => {

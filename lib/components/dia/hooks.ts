@@ -3,9 +3,10 @@ import { MinViableSlideData } from '../../types'
 import { SlideContext, SliderContentContext, SliderContext } from './context'
 import { of } from '../../functions/array'
 
-export const useSliderContext = (symbol: string = 'Unknown') => {
-  const context = React.useContext(SliderContext)
+export const useSliderContext = <D extends MinViableSlideData>(symbol: string = 'Unknown') => {
+  const context = React.useContext(SliderContext) as null | SliderContext<D>
   if (!context) throw new Error(`react-dia: ${symbol} used outside .Root`)
+
   return context
 }
 
@@ -32,7 +33,7 @@ export const useRegisterSlide = (
 }
 
 export const useSlideContext = <D extends MinViableSlideData>(symbol: string = 'Unknown') => {
-  const context = React.useContext(SlideContext) as SlideContext<D>
+  const context = React.useContext(SlideContext) as null | SlideContext<D>
   if (!context) throw new Error(`SlideContext: ${symbol} used outside .Root`)
   return context
 }

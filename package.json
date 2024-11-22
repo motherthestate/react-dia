@@ -1,6 +1,6 @@
 {
   "name": "react-dia",
-  "version": "0.0.1",
+  "version": "0.0.9",
   "type": "module",
   "files": [
     "dist"
@@ -64,7 +64,6 @@
     "focus-trap-react": "^10.3.1",
     "react-detect-click-outside": "^1.1.7",
     "react-hotkeys-hook": "^4.6.1",
-    "react-merge-refs": "^2.1.1",
     "react-remove-scroll": "^2.6.0",
     "react-slider": "^2.0.6",
     "react-use-measure": "^2.1.1",

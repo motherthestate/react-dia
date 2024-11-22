@@ -31,7 +31,6 @@ export default defineConfig(({ mode, command }) => {
           'react-hotkeys-hook',
           'focus-trap-react',
           'usehooks-ts',
-          'react-merge-refs',
           'embla-carousel-react',
           'react-zoom-pan-pinch',
           'react-use-measure',

@@ -17,14 +17,22 @@ import { useSliderContext, useRegisterSlide, useSliderContentContext } from './h
 type DiaRootProps = {
   children: React.ReactNode
   transformThreshold?: number
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 export const DiaRoot: React.FC<DiaRootProps> = props => {
-  const { transformThreshold = 0.1, ...elProps } = props
+  const { transformThreshold = 0.1, open: controlledOpen, onOpenChange, ...elProps } = props
+
+  const [_open, _setOpen] = React.useState(false)
+  const open = typeof controlledOpen === 'boolean' ? controlledOpen : _open
+  const setOpen = (open: boolean) => {
+    _setOpen(open)
+    if (onOpenChange) onOpenChange(open)
+  }
 
   const [slides, setSlides] = React.useState(Array<MinViableSlideData>())
   const [activeSlideId, setActiveSlideId] = React.useState<null | string>(null)
-  const [open, setOpen] = React.useState(false)
   const [fullscreen, setFullscreen] = React.useState(false)
   const [disableTransforms, setDisableTransforms] = React.useState(true)
 
@@ -219,17 +227,17 @@ type SliderSlidesProps<D> = {
 
 export const DiaSlideSlides = <D extends { type: string }>(props: SliderSlidesProps<D>) => {
   const { children: slideFromData } = props
-
   const context = useSliderContext('Slides')
 
   return (
     <>
-      {context.slides.map(slideData => {
+      {context.slides.map((slideData, index) => {
         return (
           <SlideContext.Provider
             key={slideData.id}
             value={{
               data: slideData,
+              index,
               active: context.activeSlideId === slideData.id,
             }}
           >
@@ -254,18 +262,24 @@ export const DiaSlideActive = <D extends MinViableSlideData>() => {
     const { children: slideFromData } = props
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const context = useSliderContext('Content')
-    if (!context.activeSlide) return null
+    const slider = useSliderContext('Content')
+    if (!slider.activeSlide) return null
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const slideIndex = React.useMemo(() => {
+      return slider.slides.findIndex(slide => slide.id === slider.activeSlideId)
+    }, [slider])
 
     return (
       <SlideContext.Provider
         value={{
-          data: context.activeSlide,
-          active: context.activeSlideId === context.activeSlide.id,
+          data: slider.activeSlide,
+          index: slideIndex,
+          active: slider.activeSlideId === slider.activeSlide.id,
         }}
       >
         {typeof slideFromData === 'function'
-          ? slideFromData(context.activeSlide as any)
+          ? slideFromData(slider.activeSlide as any)
           : slideFromData ?? null}
       </SlideContext.Provider>
     )

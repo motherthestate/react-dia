@@ -1,35 +1,34 @@
 import useEmblaCarousel from 'embla-carousel-react'
-import { useSliderContext } from '../dia/hooks'
+import { useSlideContext, useSliderContext } from '../dia/hooks'
 import React from 'react'
 import { CarouselContext } from './context'
+import { useCarouselContext } from './hooks'
 
 /**
  * Root
  */
 
-export const CarouselRoot: React.FC<
-  Omit<React.ComponentProps<'div'>, 'children'> & { children: React.ReactElement }
-> = props => {
-  const { ...elProps } = props
+type DiaCarouselProps = Omit<React.ComponentProps<'div'>, 'children'> & {
+  lazy?: boolean
+  children: React.ReactElement
+}
+
+export const CarouselRoot: React.FC<DiaCarouselProps> = props => {
+  const { lazy = true, ...elProps } = props
 
   const slider = useSliderContext()
   const [emblaRef, api] = useEmblaCarousel({ watchDrag: slider.disableTransforms, duration: 20 })
+  const [slidesInView, setSlidesInView] = React.useState(Array<number>())
 
   React.useLayoutEffect(() => {
     if (!api) return
     api.scrollTo(slider.slideIndex, !slider.animate)
   }, [slider.slideIndex, slider.animate, api])
 
-  const interactedRef = React.useRef(false)
-
   React.useEffect(() => {
     if (!api) return
     const handle = (e: typeof api) => {
-      // setSettled(false)
-      const inView = e.slidesInView()
-      const onlyIndex = inView.length === 1 ? inView[0] : undefined
-      if (typeof onlyIndex === 'number' && interactedRef.current)
-        slider.setSlideFromIndex(onlyIndex)
+      setSlidesInView(e.slidesInView())
     }
     api.on('slidesInView', handle)
     return () => void api.off('slidesInView', handle)
@@ -38,9 +37,8 @@ export const CarouselRoot: React.FC<
 
   React.useEffect(() => {
     if (!api) return
-    const handle = () => {
-      console.log('select')
-      interactedRef.current = true
+    const handle = (e: typeof api) => {
+      slider.setSlideFromIndex(e.selectedScrollSnap())
     }
     api.on('select', handle)
     return () => void api.off('select', handle)
@@ -48,7 +46,7 @@ export const CarouselRoot: React.FC<
   }, [api])
 
   return (
-    <CarouselContext.Provider value={{ settled: true }}>
+    <CarouselContext.Provider value={{ slidesInView, lazy }}>
       <div
         {...elProps}
         style={{
@@ -87,7 +85,14 @@ export const CarouselSlides: React.FC<React.ComponentProps<'div'>> = props => {
  */
 
 export const CarouselSlide: React.FC<React.ComponentProps<'div'>> = props => {
-  const { ...elProps } = props
+  const { children, ...elProps } = props
+  const carousel = useCarouselContext()
+  const slide = useSlideContext()
+
+  const inView = React.useMemo(() => {
+    if (!carousel.lazy) return true
+    return carousel.slidesInView.includes(slide.index)
+  }, [carousel.lazy, carousel.slidesInView, slide.index])
 
   return (
     <div
@@ -97,6 +102,8 @@ export const CarouselSlide: React.FC<React.ComponentProps<'div'>> = props => {
         minWidth: 0,
         ...elProps.style,
       }}
-    />
+    >
+      {inView ? children : null}
+    </div>
   )
 }
